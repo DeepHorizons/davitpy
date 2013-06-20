@@ -2,9 +2,9 @@
 # Full license can be found in LICENSE.txt
 """
 *********************
-**Module**: gme.rbsp
+**Module**: gme.sat.rbspFp
 *********************
-This module handles RBSP foorpoint calculations and plotting
+This module handles RBSP footpoint calculations and plotting
 
 **Class**:
 	* :class:`rbspFp`: FPs reading (or calculating) and plotting
