@@ -7,14 +7,26 @@
 This subpackage contains various fucntions to read and write sattelite data
 
 This includes the following modules:
-	* **poes**
+    * **poes**
     * **rbsp**
 """
-
+try: import poes
+except Exception, e:
+    print __file__+' -> gme.sat.poes: ', e
 try: from poes import *
 except Exception, e:
     print __file__+' -> gme.sat.poes: ', e
 
-try: from rbsp import *
+try: import rbspFp
 except Exception, e:
-    print __file__+' -> gme.sat.rbsp: ', e
+    print __file__+' -> gme.sat.rbspFp: ', e
+try: from rbspFp import *
+except Exception, e:
+    print __file__+' -> gme.sat.rbspFp: ', e
+
+try: import rbspEfield
+except Exception, e:
+    print __file__+' -> gme.sat.rbspEfield: ', e
+try: from rbspEfield import *
+except Exception, e:
+    print __file__+' -> gme.sat.rbspEfield: ', e

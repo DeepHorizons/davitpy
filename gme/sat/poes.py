@@ -1,3 +1,19 @@
+# Copyright (C) 2012  VT SuperDARN Lab
+# Full license can be found in LICENSE.txt
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 """
 .. module:: poes
    :synopsis: A module for reading, writing, and storing poes Data
@@ -8,12 +24,12 @@
 **Module**: gme.sat.poes
 *********************
 **Classes**:
-  * :class:`poesRec`
+  * :class:`gme.sat.poes.poesRec`
 **Functions**:
-  * :func:`readPoes`
-  * :func:`readPoesFtp`
-  * :func:`mapPoesMongo`
-  * :func:`overlayPoesTed`
+  * :func:`gme.sat.poes.readPoes`
+  * :func:`gme.sat.poes.readPoesFtp`
+  * :func:`gme.sat.poes.mapPoesMongo`
+  * :func:`gme.sat.poes.overlayPoesTed`
 """
 
 import gme
@@ -65,7 +81,7 @@ class poesRec(gme.base.gmeBase.gmeData):
     If any of the members have a value of None, this means that they could not be read for that specific time
    
   **Methods**:
-    * :func:`parseFtp`
+    * :func:`gme.sat.poes.parseFtp`
   **Example**:
     ::
     
@@ -75,12 +91,12 @@ class poesRec(gme.base.gmeBase.gmeData):
   """
   
   def parseFtp(self,line, header):
-    """This method is used to convert a line of poes data read from the NOAA NGDC FTP site into a :class:`poesRec` object.
+    """This method is used to convert a line of poes data read from the NOAA NGDC FTP site into a :class:`gme.sat.poes.poesRec` object.
     
     .. note::
       In general, users will not need to worry about this.
     
-    **Belongs to**: :class:`poesRec`
+    **Belongs to**: :class:`gme.sat.poes.poesRec`
     
     **Args**: 
       * **line** (str): the ASCII line from the FTP server
@@ -111,12 +127,12 @@ class poesRec(gme.base.gmeBase.gmeData):
       if(float(cols[ind]) != -999.): setattr(self,key,float(cols[ind]))
   
   def __init__(self, ftpLine=None, dbDict=None, satnum=None, header=None):
-    """the intialization fucntion for a :class:`omniRec` object.  
+    """the intialization fucntion for a :class:`gme.sat.poes.poesRec` object.  
     
     .. note::
       In general, users will not need to worry about this.
     
-    **Belongs to**: :class:`omniRec`
+    **Belongs to**: :class:`gme.sat.poes.poesRec`
     
     **Args**: 
       * [**ftpLine**] (str): an ASCII line from the FTP server. if this is provided, the object is initialized from it.  header must be provided in conjunction with this.  default=None
@@ -176,7 +192,7 @@ class poesRec(gme.base.gmeBase.gmeData):
     if(dbDict != None): self.parseDb(dbDict)
     
 def readPoes(sTime,eTime=None,satnum=None,folat=None,folon=None,ted=None,echar=None,pchar=None):
-  """This function reads poes data.  First, it will try to get it from the mongodb, and if it can't find it, it will look on the NOAA NGDC FTP server using :func:`readPoesFtp`.  The data are 16-second averages
+  """This function reads poes data.  First, it will try to get it from the mongodb, and if it can't find it, it will look on the NOAA NGDC FTP server using :func:`gme.sat.poes.readPoesFtp`.  The data are 16-second averages
 
   **Args**: 
     * **sTime** (`datetime <http://tinyurl.com/bl352yx>`_ or None): the earliest time you want data for
@@ -190,7 +206,7 @@ def readPoes(sTime,eTime=None,satnum=None,folat=None,folon=None,ted=None,echar=N
     * [**pchar**] (list or None): if this is not None, it must be a 2-element list of numbers, [a,b].  In this case, only data with bzm values in the range [a,b] will be returned.  default = None
     
   **Returns**:
-    * **poesList** (list or None): if data is found, a list of :class:`poesRec` objects matching the input parameters is returned.  If no data is found, None is returned.
+    * **poesList** (list or None): if data is found, a list of :class:`gme.sat.poes.poesRec` objects matching the input parameters is returned.  If no data is found, None is returned.
   **Example**:
     ::
     
@@ -261,13 +277,13 @@ def readPoesFtp(sTime,eTime=None):
   """This function reads poes data from the NOAA NGDC server via anonymous FTP connection.
   
   .. warning::
-    You should not use this. Use the general function :func:`readPoes` instead.
+    You should not use this. Use the general function :func:`gme.sat.poes.readPoes` instead.
   
   **Args**: 
     * **sTime** (`datetime <http://tinyurl.com/bl352yx>`_): the earliest time you want data for
     * [**eTime**] (`datetime <http://tinyurl.com/bl352yx>`_ or None): the latest time you want data for.  if this is None, eTime will be equal 1 day after sTime.  default = None
   **Returns**:
-    * **poesList** (list or None): if data is found, a list of :class:`poesRec` objects matching the input parameters is returned.  If no data is found, None is returned.
+    * **poesList** (list or None): if data is found, a list of :class:`gme.sat.poes.poesRec` objects matching the input parameters is returned.  If no data is found, None is returned.
   **Example**:
     ::
     
@@ -338,7 +354,12 @@ def readPoesFtp(sTime,eTime=None):
         
     #increment myTime
     myTime += dt.timedelta(days=1)
-  
+
+  try: 
+    ftp.quit()
+  except:
+    print 'problem quitting FTP'
+
   if(len(myPoes) > 0): return myPoes
   else: return None
   
