@@ -30,3 +30,10 @@ except Exception, e:
 try: from rbspEfield import *
 except Exception, e:
     print __file__+' -> gme.sat.rbspEfield: ', e
+
+try: import rbspPot
+except Exception, e:
+    print __file__+' -> gme.sat.rbspEfield: ', e
+try: from rbspPot import *
+except Exception, e:
+    print __file__+' -> gme.sat.rbspEfield: ', e
