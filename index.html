@@ -16,7 +16,7 @@
     <div class="wrapper">
       <header>
         <img src="images/davitpy.svg">
-        <p>The SuperDARN <b>D</b>ata </b>A</b>nalysis and </b>Vi</b>sualization </b>T</b>oolkit in </b>Py</b>thon</p>
+        <p>A Space Science <b>D</b>ata </b>A</b>nalysis and </b>Vi</b>sualization </b>T</b>oolkit in </b>Py</b>thon</p>
         <p class="view"><a href="https://github.com/vtsuperdarn/davitpy">View the Project on GitHub <small>vtsuperdarn/davitpy</small></a></p>
         <ul>
           <li><a href="https://github.com/vtsuperdarn/davitpy/zipball/master">Download <strong>ZIP File</strong></a></li>
@@ -25,20 +25,22 @@
         </ul>
       </header>
       <section>
-        <p>SuperDARN current data analysis software is mainly IDL based and scattered over each member institution 
-        (i.e., extremely redundant, with limited quality control). We are trying to start an open-source python module 
-        complying with SuperDARN conventions which would include fundamental i/o and visualization functions. Regular 
-        releases of this module could easily be distributed to the space sciences community.</p>
+<p>DaViTpy is the temporary name of a Python-based toolkit designed for the space science community.</p>
+
+<p>This toolkit was born from the need to break free of IDL (the Interactive Date Language) in order to access the whole world
+of Open Source and Free Software. Not only were we trying to offer a free alternative to access our data, but we also wanted to
+improve how this data is made available, and encourage collaborative development.</p>
+
+<p>We started with SuperDARN current data analysis software, which is mainly IDL based and scattered over each member institution 
+(i.e., extremely redundant, with limited quality control). Very eraly, it grew to a more general space science project, including
+empirical models, coordinate systems and geomaegnetic indices.</p>
 
 <p>
-As part of this project, we are moving towards database-oriented access to SuperDARN data, instead of the current dmap files. 
-These files will remain in use for safe storage and lower-levels applications, but users of DaViTpy will have direct access to 
-a remote database of all publicly available SuperDARN data. A NoSQL DB (MongoDB) has been successfuly implemented in the current 
-development version of DaViTpy. We believe that the proper implementation of a DB is a very important step in improving useability 
-and analysis of an increasingly rich SuperDARN dataset.
+As part of this project, we are moving towards database-oriented access to space science data. A NoSQL database (MongoDB) has been successfuly implemented in the current development version of DaViTpy for most of the data. We believe that the proper implementation of a DB is a very important step in improving useability and analysis of increasingly rich space science datasets. We are also striving to implement
+flexible interfaces to these data where users are free to either chose specific data platforms or trust the software to find the most appropriate.
 </p>
 
-<p>This is an ongoing effort with no current release yet. If you are interested in contributing to this project, please contact us.</p>
+<p>This is an ongoing effort with contributions from several academic institutions. We are always looking for new contributors, there is pleinty of room to grow and improve.</p>
 
 <h3>Code structure</h3>
 
