@@ -14,154 +14,154 @@ and radar.dat files. It also provide a function to manually update the local rad
 using the remote db database (requires an active internet connection).
 
 **Classes**:
-	* :class:`pydarn.radar.radInfoIo.updateRadars`
+    * :class:`pydarn.radar.radInfoIo.updateRadars`
 **Functions**:
-	* :func:`pydarn.radar.radInfoIo.hdwRead`: reads hdw.dat files
-	* :func:`pydarn.radar.radInfoIo.radarRead`: reads radar.dat file
+    * :func:`pydarn.radar.radInfoIo.hdwRead`: reads hdw.dat files
+    * :func:`pydarn.radar.radInfoIo.radarRead`: reads radar.dat file
 """
-		
+        
 
 # *************************************************************
 def radarRead(path=None):
-	"""Reads radar.dat file
-	
-	**Args**: 
-		* [**path**] (str): path to radar.dat file; defaults to RST environment variable SD_RADAR
-	**Returns**:
-		* A dictionary with keys matching the radar.dat variables each containing values of length #radars.
+    """Reads radar.dat file
+    
+    **Args**: 
+        * [**path**] (str): path to radar.dat file; defaults to RST environment variable SD_RADAR
+    **Returns**:
+        * A dictionary with keys matching the radar.dat variables each containing values of length #radars.
 
-	**Example**:
-		::
+    **Example**:
+        ::
 
-			radars = pydarn.radar.radarRead()
-			
-	Written by Sebastien, 2012-09
-	"""
-	import shlex
-	import os, sys
-	from datetime import datetime
-	from utils import parseDate
-	
-	# Read file
-	try:
-		if path: pathOpen = os.path.join(path, 'radar.dat')
-		else: pathOpen = os.environ['SD_RADAR']
-		file_net = open(pathOpen, 'r')
-		data = file_net.readlines()
-		file_net.close()
-	except:
-		print 'radarRead: cannot read {}: {}'.format(pathOpen,
-													 sys.exc_info()[0])
-		return None
-	
-	# Initialize placeholder dictionary of lists
-	radarF = {}
-	radarF['id'] = []
-	radarF['status'] = []
-	radarF['stTime'] = []
-	radarF['edTime'] = []
-	radarF['name'] = []
-	radarF['operator'] = []
-	radarF['hdwfname'] = []
-	radarF['code'] = []
-	radarF['cnum'] = []
-	# Fill dictionary with each radar.dat lines
-	for ldat in data:
-		ldat = shlex.split(ldat)
-		if len(ldat) == 0: continue
-		radarF['id'].append( int(ldat[0]) )
-		radarF['status'].append( int(ldat[1]) )
-		tmpDate = parseDate( int(ldat[2]) )
-		radarF['stTime'].append( datetime(tmpDate[0], tmpDate[1], tmpDate[2]) )
-		tmpDate = parseDate( int(ldat[3]) )
-		radarF['edTime'].append( datetime(tmpDate[0], tmpDate[1], tmpDate[2]) )
-		radarF['name'].append( ldat[4] )
-		radarF['operator'].append( ldat[5] )
-		radarF['hdwfname'].append( ldat[6] )
-		radarF['code'].append( ldat[7:] )
-		radarF['cnum'].append( len(ldat[7:]) )
-	
-	# Return			
-	return radarF
+            radars = pydarn.radar.radarRead()
+            
+    Written by Sebastien, 2012-09
+    """
+    import shlex
+    import os, sys
+    from datetime import datetime
+    from utils import parseDate
+    
+    # Read file
+    try:
+        if path: pathOpen = os.path.join(path, 'radar.dat')
+        else: pathOpen = os.environ['SD_RADAR']
+        file_net = open(pathOpen, 'r')
+        data = file_net.readlines()
+        file_net.close()
+    except:
+        print 'radarRead: cannot read {}: {}'.format(pathOpen,
+                                                     sys.exc_info()[0])
+        return None
+    
+    # Initialize placeholder dictionary of lists
+    radarF = {}
+    radarF['id'] = []
+    radarF['status'] = []
+    radarF['stTime'] = []
+    radarF['edTime'] = []
+    radarF['name'] = []
+    radarF['operator'] = []
+    radarF['hdwfname'] = []
+    radarF['code'] = []
+    radarF['cnum'] = []
+    # Fill dictionary with each radar.dat lines
+    for ldat in data:
+        ldat = shlex.split(ldat)
+        if len(ldat) == 0: continue
+        radarF['id'].append( int(ldat[0]) )
+        radarF['status'].append( int(ldat[1]) )
+        tmpDate = parseDate( int(ldat[2]) )
+        radarF['stTime'].append( datetime(tmpDate[0], tmpDate[1], tmpDate[2]) )
+        tmpDate = parseDate( int(ldat[3]) )
+        radarF['edTime'].append( datetime(tmpDate[0], tmpDate[1], tmpDate[2]) )
+        radarF['name'].append( ldat[4] )
+        radarF['operator'].append( ldat[5] )
+        radarF['hdwfname'].append( ldat[6] )
+        radarF['code'].append( ldat[7:] )
+        radarF['cnum'].append( len(ldat[7:]) )
+    
+    # Return            
+    return radarF
 
 
 # *************************************************************
 def hdwRead(fname, path=None):
-	"""Reads hdw.dat files for given radar specified by its hdw.dat file name
-	
-	**Args**: 
-		* **fname** (str): hdw.dat file name
-		* [**path**] (str): path to hdw.dat file; defaults to RST environment variable SD_HDWPATH
-	**Returns**:
-		* A dictionary with keys matching the hdw.dat variables each containing values of length #site updates.
+    """Reads hdw.dat files for given radar specified by its hdw.dat file name
+    
+    **Args**: 
+        * **fname** (str): hdw.dat file name
+        * [**path**] (str): path to hdw.dat file; defaults to RST environment variable SD_HDWPATH
+    **Returns**:
+        * A dictionary with keys matching the hdw.dat variables each containing values of length #site updates.
 
-	**Example**:
-		::
+    **Example**:
+        ::
 
-			hdw = pydarn.radar.hdwRead('hdw.dat.bks')
-			
-	Written by Sebastien, 2012-09
-	"""
-	import os
-	import shlex
-	from datetime import datetime
-	from utils import timeYrsecToDate
-	
-	# Read hardware file FNAME
-	try:
-		if path: pathOpen = os.path.join(path, fname)
-		else: pathOpen = os.path.join(os.environ['SD_HDWPATH'], fname)
-		file_hdw = open(pathOpen, 'r')
-		data = file_hdw.readlines()
-		file_hdw.close()
-	except:
-		print 'hdwRead: cannot read {}: {}'.format(pathOpen, 
-												   sys.exc_info()[0])
-		return
-	
-	# Site placeholder
-	siteF = {}
-	siteF['tval'] = []
-	siteF['geolat'] = []
-	siteF['geolon'] = []
-	siteF['alt'] = []
-	siteF['boresite'] = []
-	siteF['bmsep'] = []
-	siteF['vdir'] = []
-	siteF['atten'] = []
-	siteF['tdiff'] = []
-	siteF['phidiff'] = []
-	siteF['interfer'] = []
-	siteF['recrise'] = []
-	siteF['maxatten'] = []
-	siteF['maxgate'] = []
-	siteF['maxbeam'] = []
-	# Read line by line, ignoring comments
-	for ldat in data:
-		ldat = shlex.split(ldat)
-		if len(ldat) == 0: continue
-		if ldat[0] == '#': continue
-		if int(ldat[1]) == 2999: 
-			siteF['tval'].append( -1 )
-		else:
-			siteF['tval'].append( timeYrsecToDate( int(ldat[2]), int(ldat[1]) ) )
-		siteF['geolat'].append( float(ldat[3]) )
-		siteF['geolon'].append( float(ldat[4]) )
-		siteF['alt'].append( float(ldat[5]) )
-		siteF['boresite'].append( float(ldat[6]) )
-		siteF['bmsep'].append( float(ldat[7]) )
-		siteF['vdir'].append( float(ldat[8]) )
-		siteF['atten'].append( float(ldat[9]) )
-		siteF['tdiff'].append( float(ldat[10]) )
-		siteF['phidiff'].append( float(ldat[11]) )
-		siteF['interfer'].append( [float(ldat[12]), float(ldat[13]), float(ldat[14])] )
-		siteF['recrise'].append( float(ldat[15]) )
-		siteF['maxatten'].append( int(ldat[16]) )
-		siteF['maxgate'].append( int(ldat[17]) )
-		siteF['maxbeam'].append( int(ldat[18]) )
-		
-	# Return
-	return siteF
+            hdw = pydarn.radar.hdwRead('hdw.dat.bks')
+            
+    Written by Sebastien, 2012-09
+    """
+    import os
+    import shlex
+    from datetime import datetime
+    from utils import timeYrsecToDate
+    
+    # Read hardware file FNAME
+    try:
+        if path: pathOpen = os.path.join(path, fname)
+        else: pathOpen = os.path.join(os.environ['SD_HDWPATH'], fname)
+        file_hdw = open(pathOpen, 'r')
+        data = file_hdw.readlines()
+        file_hdw.close()
+    except:
+        print 'hdwRead: cannot read {}: {}'.format(pathOpen, 
+                                                   sys.exc_info()[0])
+        return
+    
+    # Site placeholder
+    siteF = {}
+    siteF['tval'] = []
+    siteF['geolat'] = []
+    siteF['geolon'] = []
+    siteF['alt'] = []
+    siteF['boresite'] = []
+    siteF['bmsep'] = []
+    siteF['vdir'] = []
+    siteF['atten'] = []
+    siteF['tdiff'] = []
+    siteF['phidiff'] = []
+    siteF['interfer'] = []
+    siteF['recrise'] = []
+    siteF['maxatten'] = []
+    siteF['maxgate'] = []
+    siteF['maxbeam'] = []
+    # Read line by line, ignoring comments
+    for ldat in data:
+        ldat = shlex.split(ldat)
+        if len(ldat) == 0: continue
+        if ldat[0] == '#': continue
+        if int(ldat[1]) == 2999: 
+            siteF['tval'].append( -1 )
+        else:
+            siteF['tval'].append( timeYrsecToDate( int(ldat[2]), int(ldat[1]) ) )
+        siteF['geolat'].append( float(ldat[3]) )
+        siteF['geolon'].append( float(ldat[4]) )
+        siteF['alt'].append( float(ldat[5]) )
+        siteF['boresite'].append( float(ldat[6]) )
+        siteF['bmsep'].append( float(ldat[7]) )
+        siteF['vdir'].append( float(ldat[8]) )
+        siteF['atten'].append( float(ldat[9]) )
+        siteF['tdiff'].append( float(ldat[10]) )
+        siteF['phidiff'].append( float(ldat[11]) )
+        siteF['interfer'].append( [float(ldat[12]), float(ldat[13]), float(ldat[14])] )
+        siteF['recrise'].append( float(ldat[15]) )
+        siteF['maxatten'].append( int(ldat[16]) )
+        siteF['maxgate'].append( int(ldat[17]) )
+        siteF['maxbeam'].append( int(ldat[18]) )
+        
+    # Return
+    return siteF
 
 
 # *************************************************************

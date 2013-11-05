@@ -12,6 +12,10 @@
 """
 
 try:
+      import iriFort
+except Exception, e:
+      print __file__+' -> models.iri.iriFort: ', e
+try:
       from iri import *
 except Exception, e:
       print __file__+' -> models.iri.iri: ', e
