@@ -100,7 +100,7 @@ class Iri(object):
 
     def initialize(self, ne=True, ni=2, vi=False, 
         ni_units='%', temp=True, 
-        b0=0, f0f2='ursi', f107lim=True, 
+        b0=0, f0f2mod='ursi', f107lim=True, 
         nete=None, nemod=0, f1mod=0, netops=2, 
         tetops=1, spreaF=False, auroral_bound=False,
         foE_storm=False, foF2_storm=False,  
@@ -116,7 +116,7 @@ class Iri(object):
         * `vi`: ion drift computed
         * `temp`: compute Te and Ti
         * `b0`: 0 - tabulated, 1 - ABT-2009, 2 - Gulyaeva h0.5
-        * `fof2`: 'ursi' or 'ccir'
+        * `fof2mod`: 'ursi' or 'ccir'
         * `f107lim`: f10.7 limited at 188 or not
         * `nete`: 2 element array to calculate Te [ne(300km), ne(400km)] or [ne(300km), ne(550km)]
         * `nemod`: 0 - Standard, 1 - Lay-function formalism
@@ -131,8 +131,8 @@ class Iri(object):
         * `nmF1`, `hmF1`, `foF1`: F1 peak density [m^-3], altitude [km], frequency [MHz] 
         * `nmE`, `hmE`, `foE`: E peak density [m^-3], altitude [km], frequency [MHz]
         * `f107_d`, `f107_81`: f10.7 daily and 81 days 
-        * `rz12`: 
-        * `ig12`: 
+        * `rz12`: sunspot number
+        * `ig12`: ionospheric index
         """
         test = lambda var, val: True if var == val else False
         self.params = [-1]*100
@@ -141,7 +141,7 @@ class Iri(object):
         self.jf[1] = test(temp, True)
         self.jf[2] = test(ni, None)
         self.jf[3] = test(b0, 0)
-        self.jf[4] = test(fof2, 'ccir')
+        self.jf[4] = test(f0f2mod, 'ccir')
         self.jf[5] = test(ni, 1)
         self.jf[6] = test(f107lim, True)
         self.jf[7] = test(foF2, None) and test(nmF2, None)
