@@ -11,8 +11,9 @@ This module wraps IRI fortran subroutines
 
 Written by Sebastien
 """
+from models import Model as __Model
 
-class Iri(object):
+class Iri(__Model):
     """ This class runs and stores the IRI model and its results
 
     **Args**:
@@ -33,24 +34,69 @@ class Iri(object):
 
     """
     def __init__(self, date, lat, lon, alt, 
-        coords='geo', ut=True):
-        # First check for iterables:
-        self.lat = self.__iterable(lat)
-        self.lon = self.__iterable(lon)
-        self.alt = self.__iterable(alt)
+        coords='geo', ut=True, run=True):
+        super(Iri, self).__init__(date, lat, lon, alt, 
+                                limit=1000)
 
         # coordinates
         self.coords = coords
-
-        # Input date
-        self.date = date
+        # ut or not ut
         self.ut = ut
 
         # Initialize default options:
         self.initialize()
 
         # Run fortran code
-        self.run()
+        if run:
+            self.run()
+
+    def plot_profile(self, ilat=0, ilon=0, 
+        fig=None, ax=None, 
+        legend='upper left'):
+        """ Plot density and temperature profiles
+
+        **Args**:
+            * `ilat` (int): latitude index
+            * `ilon` (int): longitude index
+            * `fig`: matplotlib figure object
+            * `ax`: matplotlib axes object (list of 2)
+            * `legend`: legend placement (None for no legend)
+        """
+        import matplotlib as mp
+
+        if fig is None and ax is None:
+            fig = mp.figure.Figure()
+            ax = [fig.add_subplot(1,2,1),
+                  fig.add_subplot(1,2,2),]
+        elif ax is None:
+            ax = [fig.add_subplot(1,2,1),
+                  fig.add_subplot(1,2,2),]
+
+
+        ax[0].plot(self.ne[ilat,ilon,:], self.alt, 
+            label=r'$n_{e}$',)
+        for ion in self.ni:
+            ax[0].plot(self.ni[ion][ilat,ilon,:], self.alt, 
+                label=ion, linestyle='--')
+        ax[0].set_xlabel(r'density [m$^{-3}$]')
+
+
+        ax[1].plot(self.T[ilat,ilon,:], self.alt, 
+            label=r'T',)
+        ax[1].plot(self.Te[ilat,ilon,:], self.alt, 
+            label=r'T$_e$',)
+        ax[1].plot(self.Ti[ilat,ilon,:], self.alt, 
+            label=r'T$_i$',)
+        ax[1].set_xlabel(r'temperature [K]')
+
+        for axx in ax:
+            axx.set_ylabel(r'altitude [km]')
+            axx.set_xscale('log')
+            if legend is not None:
+                axx.legend(loc=legend)
+            axx.grid()
+
+        return fig, ax
 
     def run(self):
         """ Run fortran subroutine(s)
@@ -83,7 +129,7 @@ class Iri(object):
                     self.date.year, self.date.month*100 + self.date.day, 
                     self.date.hour + self.date.minute + 25*self.ut,
                     self.alt[0], self.alt[-1], 
-                    (self.alt[-1] - self.alt[0])/len(self.alt),
+                    (self.alt[-1] - self.alt[0])/(len(self.alt)-1),
                     self.params)
                 self.ne[i,j,:] = outf[0,0:dim[2]]
                 self.T[i,j,:] = outf[1,0:dim[2]]
@@ -99,7 +145,7 @@ class Iri(object):
                 self.params_out[i,j,:] = oarr
 
     def initialize(self, ne=True, ni=2, vi=False, 
-        ni_units='%', temp=True, 
+        ni_units='m', temp=True, 
         b0=0, f0f2mod='ursi', f107lim=True, 
         nete=None, nemod=0, f1mod=0, netops=2, 
         tetops=1, spreaF=False, auroral_bound=False,
@@ -139,7 +185,7 @@ class Iri(object):
         self.jf = [False]*50
         self.jf[0] = test(ne, True)
         self.jf[1] = test(temp, True)
-        self.jf[2] = test(ni, None)
+        self.jf[2] = test(ni, 1) or test(ni, 2)
         self.jf[3] = test(b0, 0)
         self.jf[4] = test(f0f2mod, 'ccir')
         self.jf[5] = test(ni, 1)
@@ -195,19 +241,3 @@ class Iri(object):
         self.jf[32] = test(auroral_bound, True)
         self.jf[33] = True
         self.jf[34] = test(foE_storm, True)
-
-    def __iterable(self, iterable):
-        """ Check if `iterable` is iterable, if not, make it so.
-        Also, make sure each iterable is smaller than 1000 elements, 
-        otherwise resample
-        """
-        import numpy as np
-        try:
-            out = np.array( [l for l in iterable] )
-        except TypeError:
-            out = np.array( [iterable] )
-        if len(out) > 1000:
-            print('Resampling input [{}...{}]'.format(
-                iterable[0], iterable[-1]))
-            out = np.linspace(iterable[0], iterable[-1], 1000)
-        return out

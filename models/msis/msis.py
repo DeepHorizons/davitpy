@@ -4,7 +4,7 @@
 *********************
 **Module**: models.msis.msis
 *********************
-This module wraps IRI fortran subroutines
+This module wraps MSIS fortran subroutines
 
 **Classes**:
     * :class:`models.msis.msis.Msis`
@@ -14,8 +14,9 @@ This module wraps IRI fortran subroutines
 
 Written by Sebastien
 """
+from models import Model as __Model
 
-class Msis(object):
+class Msis(__Model):
     """ This class runs and stores the MSIS model and its results
 
     **Args**:
@@ -37,11 +38,7 @@ class Msis(object):
 
     """
     def __init__(self, date, lat, lon, alt):
-        # Inputs
-        self.date = date
-        self.lat = self.__iterable(lat)
-        self.lon = self.__iterable(lon)
-        self.alt = self.__iterable(alt)
+        super(Msis, self).__init__(date, lat, lon, alt)
 
         # Calculate everything
         self.mass = 48
@@ -97,17 +94,6 @@ class Msis(object):
                     self.rho['H'][i,j,k] = d[6]
                     self.rho['He'][i,j,k] = d[0]
                     self.rho['Ar'][i,j,k] = d[4]
-        
-
-    def __iterable(self, iterable):
-        """ Check if `iterable` is iterable, if not, make it so.
-        """
-        import numpy as np
-        try:
-            return np.array( [l for l in iterable] )
-        except TypeError:
-            return np.array( [iterable] )
-
 
 
 def getF107Ap(mydatetime=None):
@@ -190,13 +176,12 @@ def getF107Ap(mydatetime=None):
     for id in xrange(3):
         for ih in xrange(8):
             ttap.append(tap[dtInd-id-1][-ih-1])
-    dictOut['ap'] = [ tapd[dtInd], 
-                    ttap[0], 
-                    ttap[1], 
-                    ttap[2], 
-                    ttap[3], 
-                    mean(ttap[4:13]), 
-                    mean(ttap[13:26])
-                  ]
+    dictOut['ap'] = [tapd[dtInd], 
+                     ttap[0], 
+                     ttap[1], 
+                     ttap[2], 
+                     ttap[3], 
+                     mean(ttap[4:13]), 
+                     mean(ttap[13:26]),]
 
     return dictOut

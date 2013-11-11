@@ -4,11 +4,12 @@
 *********************
 **Module**: models.iri
 *********************
+International Reference Ionosphere
 
 **Modules**:
-    * :mod:`iri`: fortran subroutines 
-    
-*******************************
+  * :mod:`models.iri.iri`: IRI wrapper
+  * :mod:`models.iri.iriFort`: fortran subroutines 
+
 """
 
 try:

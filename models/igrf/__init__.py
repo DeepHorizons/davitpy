@@ -4,14 +4,19 @@
 *********************
 **Module**: models.igrf
 *********************
-Basic plotting tools
+International GeoMagnetic Reference Field
 
 **Modules**:
-  * :mod:`models.igrf`: fortran subroutines
+  * :mod:`models.igrf.igrf`: IGRF wrapper
+  * :mod:`models.igrf.igrfFort`: fortran subroutines
 
 """
 
 try:
+    import igrfFort
+except Exception, e:
+    print __file__+' -> models.igrf.igrfFort: ', e
+try:
     from igrf import *
 except Exception, e:
-    print __file__+' -> igrf: ', e
+    print __file__+' -> models.igrf.igrf: ', e

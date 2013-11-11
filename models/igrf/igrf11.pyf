@@ -1,9 +1,9 @@
 !    -*- f90 -*-
 ! Note: the context of this file is case sensitive.
 
-python module igrf ! in 
-    interface  ! in :igrf
-        subroutine igrf11(itype,date,alt,ifl,xlti,xltf,xltd,xlni,xlnf,xlnd,alat,alon,ad,as,ah,ax,ay,az,af,totpts) ! in :igrf:igrf11.f90
+python module igrfFort ! in 
+    interface  ! in :igrfFort
+        subroutine igrf11(itype,date,alt,ifl,xlti,xltf,xltd,xlni,xlnf,xlnd,alat,alon,ad,as,ah,ax,ay,az,af,totpts) ! in :igrfFort:igrf11.f90
             integer intent(in) :: itype
             real intent(in) :: date
             real*8 intent(in) :: alt
@@ -25,17 +25,17 @@ python module igrf ! in
             real*8 dimension(totpts),intent(out),depend(totpts) :: af
             integer, optional,intent(hide),depend(xlti,xltf,xltd,xlni,xlnf,xlnd) :: totpts=(abs(xltf-xlti)/xltd+1)*(abs(xlnf-xlni)/xlnd+1)
         end subroutine igrf11
-        subroutine dmddec(i,m,x) ! in :igrf:igrf11.f90
+        subroutine dmddec(i,m,x) ! in :igrfFort:igrf11.f90
             integer intent(in) :: i
             integer intent(in) :: m
             double precision intent(out) :: x
         end subroutine dmddec
-        subroutine ddecdm(x,i,m) ! in :igrf:igrf11.f90
+        subroutine ddecdm(x,i,m) ! in :igrfFort:igrf11.f90
             double precision intent(in) :: x
             integer intent(out) :: i
             integer intent(out) :: m
         end subroutine ddecdm
-        subroutine igrf11syn(isv,date,itype,alt,colat,elong,x,y,z,f) ! in :igrf:igrf11.f90
+        subroutine igrf11syn(isv,date,itype,alt,colat,elong,x,y,z,f) ! in :igrfFort:igrf11.f90
             integer intent(in) :: isv
             real intent(in) :: date
             integer intent(in) :: itype
@@ -48,7 +48,7 @@ python module igrf ! in
             double precision intent(out) :: f
         end subroutine igrf11syn
     end interface 
-end python module igrf
+end python module igrfFort
 
 ! This file was auto-generated with f2py (version:2).
 ! See http://cens.ioc.ee/projects/f2py2e/
