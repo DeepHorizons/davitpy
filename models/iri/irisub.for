@@ -1812,13 +1812,13 @@ c
 7108  IF(NOION) GOTO 7118
       IF((HEIGHT.GT.HNIE).OR.(HEIGHT.LT.HNIA)) GOTO 7118
 
-			ROX=-1.
-			RHX=-1.
-			RNX=-1.
-			RHEX=-1.
-			RNOX=-1.
-			RO2X=-1.
-			RCLUST=-1.
+      ROX=-1.
+      RHX=-1.
+      RNX=-1.
+      RHEX=-1.
+      RNOX=-1.
+      RO2X=-1.
+      RCLUST=-1.
       if(DY) then
         if (height.gt.300.) then
 c Triskova-Truhlik-Smilauer-2003 model
@@ -1838,18 +1838,18 @@ c Triskova-Truhlik-Smilauer-2003 model
 c Richards-Bilitza-Voglozin-2010 IDC model
             CALL GTD7(IYD,SEC,height,lati,longi,HOUR,f10781,f107y,
      &        IAPO,48,D_MSIS,T_MSIS)
-						XN4S = 0.5 * D_MSIS(8)
-						EDENS=ELEDE/1.e6
+			XN4S = 0.5 * D_MSIS(8)
+			EDENS=ELEDE/1.e6
             CALL CHEMION(0,height,F107Y,F10781,TEH,TIH,TNH,D_MSIS(2),
      &       	D_MSIS(4),D_MSIS(3),D_MSIS(1),-1.0,XN4S,EDENS,-1.0,xhi,
      &       	ro,ro2,rno,rn2,rn,Den_NO,Den_N2D,INEWT)
-						sumion = edens/100.
-        		rox=ro/sumion
-						rhx=0.
-						rhex=0.
-        		rnx=rn/sumion
-        		rnox=rno/sumion
-        		ro2x=ro2/sumion
+			sumion = edens/100.
+    		rox=ro/sumion
+			rhx=0.
+			rhex=0.
+    		rnx=rn/sumion
+    		rnox=rno/sumion
+    		ro2x=ro2/sumion
         endif
       else
 c Danilov-Smirnova-1995 model and Danilov-Yaichnikov-1985 model (upper)

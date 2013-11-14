@@ -13,6 +13,7 @@ Written by Sebastien
 """
 import models as __models
 
+
 class Sigma(__models.Model):
     """ This class runs and stores the Conductivity model and its results
 
@@ -41,12 +42,12 @@ class Sigma(__models.Model):
         self.mag = models.igrf.Igrf(self.date, 
             self.lat, self.lon, self.alt)
 
-        ## Call to MSIS
-        self.atm = models.msis.Msis(self.date, 
-            self.lat, self.lon, self.alt)
-
         ## Call to IRI
         self.ionos = models.iri.Iri(self.date, 
+            self.lat, self.lon, self.alt)
+
+        ## Call to MSIS
+        self.atm = models.msis.Msis(self.date, 
             self.lat, self.lon, self.alt)
 
         # Some constants
@@ -63,13 +64,15 @@ class Sigma(__models.Model):
 
         ## Now some more calculations
         # Ion density
-        ni = self.ionos.ni['O+'] + self.ionos.ni['O2+'] + self.ionos.ni['NO+']
+        # ni = self.ionos.ni['O+'] + self.ionos.ni['O2+'] + self.ionos.ni['NO+']
+        ni = self.ionos.ne
         # Neutral density
         nn = self.atm.rho['He'] + self.atm.rho['O'] + \
             self.atm.rho['N2'] + self.atm.rho['O2'] + self.atm.rho['Ar']
         # ion mass (harmonic mean over NO+, O+, O2+)
-        mi = ni/(self.ionos.ni['O+']/Ao/amu + self.ionos.ni['O2+']/Ao2/amu + \
-                self.ionos.ni['NO+']/(An + Ao)/amu)
+        # mi = ni/(self.ionos.ni['O+']/Ao/amu + self.ionos.ni['O2+']/Ao2/amu + \
+        #         self.ionos.ni['NO+']/(An + Ao)/amu)
+        mi = (Ao*amu + Ao2*amu)/2.
         # neutral mean molecular mass in amu
         A = (Ahe*self.atm.rho['He'] + Ao*self.atm.rho['O'] + \
             An2*self.atm.rho['N2'] + Ao2*self.atm.rho['O2'] + \

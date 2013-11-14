@@ -71,7 +71,7 @@ C-------------------------------------------------------------------------------
       IMPLICIT NONE
       INTEGER JPRINT        !.. Turns on printing of production and loss
       INTEGER INEWT         !.. Signifies when the Newton procedure fails
-      INTEGER I,J,K,ITERS   !.. loop control variables
+      INTEGER I,IK,J,K,ITERS!.. loop control variables
       INTEGER IRATS         !.. Switch for different rates
       INTEGER ITS,JITER     !.. Variables for Newton procedure
       REAL TE,TN,TI         !.. Electron and ion temperatures
@@ -107,25 +107,94 @@ C-------------------------------------------------------------------------------
       COMMON/EUVPRD/EUVION(3,12),PEXCIT(3,12),PEPION(3,12),OTHPR1(6)
      >   ,OTHPR2(6)
 
+!      print*,'1',JPRINT
+!      print*,'2',INEWT
+!      print*,'3',I,J,K,ITERS
+!      print*,'4',IRATS
+!      print*,'5',ITS,JITER
+!      print*,'6',TE,TN,TI
+!      print*,'7',F107,F107A,ALT,SZAD
+!      print*,'8',HEPLUS,OXPLUS,N2PLUS,NOPLUS,O2PLUS,NPLUS,USER_NPLUS
+!      print*,'9',O2N,OXN,N2N,NNO,HEN,N4S,USER_NO
+!      print*,'10',NE,N2P,N2D,OP2D,OP2P
+!      print*,'11',TPROD1,PDISOP,TPROD2,TPROD3,TPROD5
+!      print*,'12',TPNOP,O2PPROD
+!      print*,'13',DISNP,PHOTN,PLYNOP
+!      print*,'14',PSEC
+!      print*,'15',RTS(99)
+!      print*,'16',SECPN2PLUS,EUVN2PLUS
+!      print*,'17',H,DEX,FEX(2)
+!      print*,'18',SUMIONS
+!      print*,'19',PNO,LNO,PDNOSR
+!      print*,'20',N2A
+!      print*,'21',VCON
+!      print*,'22',DISN2D,UVDISN,PN2D,LN2D
+!      print*,'23',ALTCHEM
+!      print*,'24',N2APRD
+!      print*,'25',PN4S,LN4S,DISN4S
+!      print*,'26',OXPLUSAVE
+!      print*,'27',EUVION
+!      print*,'28',PEXCIT
+!      print*,'29',PEPION
+!      print*,'30',OTHPR1
+!      print*,'31',OTHPR2
+
       !.. initialize parameters
-      DATA VCON/1.0/K/0/
-      DATA PNO,LNO,PDNOSR,PLYNOP,N2A/5*0.0/
-      DATA DISN2D,UVDISN/0.0,0.0/
-      DATA HEPLUS/0.0/
-!       print*, JPRINT,ALT,F107,F107A,TE,TI,TN,OXN,O2N,N2N,HEN,USER_NO,N4S,NE,USER_NPLUS,SZAD
+      !.. the DATA keyword fails with f2py (I think)
+!      DATA VCON/1.0/K/0/
+!      DATA PNO,LNO,PDNOSR,PLYNOP,N2A/5*0.0/
+!      DATA DISN2D,UVDISN/0.0,0.0/
+!      DATA HEPLUS/0.0/
+      VCON = 1.0
+      K = 0
+      PNO = 0.0
+      LNO = 0.0
+      PDNOSR = 0.0
+      PLYNOP = 0.0
+      N2A = 0.0
+      DISN2D = 0.0
+      UVDISN = 0.0
+      HEPLUS = 0.0
+      OXPLUS = 0.0
+      O2PLUS = 0.0
+      NOPLUS = 0.0
+      N2PLUS = 0.0
+      NPLUS = 0.0
+      NNO = 0.0
+      N2D = 0.0
+      INEWT = 0.0
+      DO K=1,3
+        DO IK=1,12
+          EUVION(K,IK)=0.0
+          PEPION(K,IK)=0.0
+          PEXCIT(K,IK)=0.0
+        ENDDO
+      ENDDO
+      DO K=1,3
+        OTHPR1(K)=0.0
+        OTHPR2(K)=0.0
+      ENDDO
+
+!      print*, 'IN',JPRINT,ALT,F107,F107A,TE,TI,TN,OXN,O2N,N2N,HEN,
+!     >  USER_NO,N4S,NE,USER_NPLUS,SZAD
+!      print*, 'OUT',OXPLUS,O2PLUS,NOPLUS,N2PLUS,NPLUS,NNO,N2D,INEWT
+!      print*,'00',ALT,EUVION(1,2)
 
       ALTCHEM=150  !.. Initial altitude for O+ for imposing chemistry
       JITER=0      !.. Counts the number of Newton iterations
       N2P=0.0      !.. N(2P) density
 
       CALL RATS(0,TE,TI,TN,RTS)  !.. Get the reaction rates
+!      print*,'01',ALT,EUVION(1,2)
 
       !.. PRIMPR calculates solar EUV production rates. 
       CALL PRIMPR(1,ALT,OXN,N2N,O2N,HEN,SZAD*0.01745,TN,F107,F107A,N4S)
       UVDISN=OTHPR1(1)
+!      print*,'02',ALT,EUVION(1,2)
 
       !.. Calculate secondary Production from photoelectrons
       CALL SECIPRD(ALT,SZAD,F107,F107A,TE,TN,OXN,O2N,N2N,NE,N2APRD)
+!      print*,'03',ALT,EUVION(1,2)
 
       DISNP= EUVION(3,4)+EUVION(3,5)+EUVION(3,6)
      >   +0.1*(PEPION(3,1)+PEPION(3,2)+PEPION(3,3))  !.. Rydberg diss       
@@ -156,20 +225,24 @@ C-------------------------------------------------------------------------------
         !.. O+(2P) Calculate and print densities, production, loss
         PSEC=PEPION(1,3)           !.. Photoelectron production
         TPROD3=EUVION(1,3)+PSEC    !.. Add EUV and photoelectrons
+!        print*,'I1',ALT,EUVION(1,2)
         CALL COP2P(JPRINT,7,K,ALT,RTS,OXN,O2N,N2N,NE,OP2P,TPROD3,PSEC
      >    ,HEPLUS,N4S,NNO,TE)
+!        print*,'O1',ALT,OP2P,NPLUS,PN2D,LN2D,OXPLUS,TPROD2,EUVION(1,2)
 
         !.. O+(2D) Calculate and print densities, production, loss
         PSEC=PEPION(1,2)           !.. Photoelectron production
         TPROD2=EUVION(1,2)         !.. EUV
         CALL COP2D(JPRINT,8,K,ALT,RTS,OXN,O2N,N2N,NE,OP2D,TPROD2,OP2P
      >    ,HEPLUS,N4S,NNO,PSEC)
+!        print*,'O2',ALT,OP2P,NPLUS,PN2D,LN2D,OXPLUS,TPROD2,EUVION(1,2)
 
         !.. O+(4S) Calculate and print densities, production, loss. 
         TPROD1=EUVION(1,1)
         PDISOP=EUVION(2,4)+EUVION(2,5)+PEPION(2,4)+PEPION(2,5)
         CALL COP4S(JPRINT,4,K,ALT,RTS,OXN,O2N,N2N,NE,OXPLUS,TPROD1,OP2D
      >    ,OP2P,PEPION(1,1),PDISOP,N2PLUS,N2D,NNO,1.0,HEPLUS)
+!        print*,'O3',ALT,OP2P,NPLUS,PN2D,LN2D,OXPLUS,TPROD2
 
         CALL CN2A(JPRINT,27,K,ALT,RTS,OXN,O2N,N2N,NE,N2A,N2APRD,0.0,
      >     0.0,0.0)
@@ -181,11 +254,13 @@ C-------------------------------------------------------------------------------
         CALL CN2D(JPRINT,16,K,ALT,RTS,OXN,O2N,N2N,NOPLUS,NE,PN2D,LN2D
      >    ,N2PLUS,DISN2D,UVDISN,NPLUS,N2P,N2D,OXPLUS,NNO,N2A)
         N2D=PN2D/LN2D
+!        print*,'O4',ALT,OP2P,N2D,NPLUS,PN2D,LN2D,OXPLUS
 
         !.. N2+ Calculate and print densities, production, loss. 
         CALL CN2PLS(JPRINT,9,K,ALT,RTS,OXN,O2N,N2N,NE,N2PLUS,EUVION(3,1)
      >   ,EUVION(3,2),EUVION(3,3),PEPION(3,1),PEPION(3,2),PEPION(3,3)
      >   ,OP2D,OP2P,HEPLUS,NPLUS,NNO,N4S)
+!        print*,'O5',ALT,OP2P,N2D,NPLUS
 
         !.. N+ Calculate and print densities, production, loss. 
         !.. Note that N(2D) is turned off in N+ solution 
@@ -193,6 +268,7 @@ C-------------------------------------------------------------------------------
         CALL CNPLS(JPRINT,10,K,ALT,RTS,OXN,O2N,N2N,NE,DISNP,NPLUS,
      >    OXPLUS,N2D,OP2P,HEPLUS,PHOTN,O2PLUS,N4S,OP2D,N2PLUS,NNO)
         IF(USER_NPLUS.GT.0) NPLUS=USER_NPLUS  !.. User specified N+
+!        print*,'O6',ALT,OP2P,N2D,NPLUS
 
         CALL CN4S(JPRINT,28,K,ALT,RTS,OXN,O2N,N2N,NE,PN4S,LN4S,N4S,
      >    DISN4S,N2D,N2P,OXPLUS,N2PLUS,UVDISN,NOPLUS,NPLUS,NNO,
@@ -202,16 +278,19 @@ C-------------------------------------------------------------------------------
         !.. NO Calculate and print densities, production, loss.
         CALL CNO(JPRINT,15,K,ALT,RTS,OXN,O2N,N2N,NE,PNO,LNO
      >    ,N2D,N4S,N2P,NNO,O2PLUS,OXPLUS,OTHPR2(2),OTHPR2(1),N2A,NPLUS)
+!        print*,'O7',ALT,OP2P,N2D,NPLUS
         
         NNO=PNO/LNO     !.. NO chemical equilibrium density
         !.. Set a floor on NO density, which is needed below ~150 km at night 
         IF(NNO.LT.1.0E8*EXP((100-ALT)/20)) NNO=1.0E8*EXP((100-ALT)/20)
         IF(USER_NO.GT.1.0) NNO=USER_NO  !.. substitute user specified value
         IF(NNO.GT.1.5E8) NNO=1.5E8      !.. Don't let NO get too big
+!        print*,'O8',ALT,OP2P,N2D,NPLUS
 
         !.. NO+ Calculate and print densities, production, loss. 
         CALL CNOP(JPRINT,11,K,ALT,RTS,OXN,O2N,N2N,NE,TPNOP,NOPLUS,OXPLUS
      >    ,N2PLUS,O2PLUS,N4S,NNO,NPLUS,N2P,PLYNOP,VCON,N2D,OP2D)
+!        print*,'O9',ALT,OP2P,N2D,NPLUS
 
         !.. O2+ Calculate and print densities, production, loss. 
         !.. EUV + PE production
@@ -219,6 +298,7 @@ C-------------------------------------------------------------------------------
      >       PEPION(2,2)+PEPION(2,3)
         CALL CO2P(JPRINT,12,K,ALT,RTS,OXN,O2N,N2N,NE,O2PPROD
      >    ,O2PLUS,TPROD5,OXPLUS,OP2D,N2PLUS,NPLUS,N4S,NNO,OP2P)
+!        print*,'O10',ALT,OP2P,N2D,NPLUS
       ENDDO
 
       !.. This section for chemical equilibrium densities for all species 
@@ -347,6 +427,8 @@ C...      EF=RTS(61)*0.76/L1
      >  ,5X,'RAD     +NO')
       IF(JPR.GT.0) WRITE(I,7) Z,P1/L1,(PR(K)*EF,K=1,8)
      > ,(LR(K)*N2D,K=1,6)
+!      print*,(PR(K),K=1,8)
+!      print*,(LR(K),K=1,6),OPLS,RTS(29)
       RETURN
  7    FORMAT(F6.1,1P,22E8.1)
       END
@@ -376,6 +458,10 @@ C........no
      > ,3X,'N2D+NO   hv<1910   Lyman-a')
       IF(JPR.GT.0) WRITE(I,7) Z,NNO,P1/L1,(PR(K),K=1,5)
      > ,(LR(K)*NNO,K=1,6)
+!      print*,'CNO--',(PR(K),K=1,5),O2N,N2D,NPLUS,OPLS
+!      print*,'CNO--',(LR(K),K=1,6)
+!      print*,'CNO--',RTS(16),RTS(7),RTS(38),RTS(27),RTS(22),
+!     > RTS(9),RTS(23),RTS(24),RTS(41)
       RETURN
  7    FORMAT(F6.1,1P,22E9.2)
       END
@@ -554,6 +640,9 @@ C.........pr(1)= euv production of o+(4s)
      >  ,'+NO   +N2D')
       IF(JPR.GT.0) WRITE(I,7) Z,OPLS,(PR(K),K=1,10)
      > ,(LR(K)*OPLS,K=1,4)
+!      print*,TPROD1,NE,PDISOP,ON,OP2D
+!      print*,(PR(K),K=1,12)
+!      print*,(LR(K),K=1,4)
       RETURN
  7    FORMAT(F6.1,1P,22E8.1)
       END
@@ -615,6 +704,10 @@ C.......o+(2p)
      > ,6x,'OX       N2        e      Te       E7320')
       IF(JPR.GT.0) WRITE(I,7) Z,OP2P,PR(1),PR(2),PR(3),
      >  (LR(K)*OP2P,K=1,8),ON,N2N,NE,TE,OP2P*0.218*0.781
+!      print*,'COP2P--',(PR(K),K=1,3),NNO
+!      print*,'COP2P--',(LR(K),K=1,8)
+!      print*,'COP2P--',RTS(92),RTS(26),RTS(20),RTS(13),RTS(14),
+!     >  RTS(85),RTS(86),RTS(87),RTS(88)
       RETURN
  7    FORMAT(F6.1,1P,22E9.2)
       END
@@ -2084,7 +2177,20 @@ C.... 2009 for the chemical equilibrium model by P. richards.
       !.. the wavelengths in FNITE go from largest (#3=HI) to smallest.
       DATA FNITE/9E5,0.0,9E5,2*0.0,9E6,13*0.0,3E5,8*0.0,3E5,8*0.0/
       DATA FNFAC/1.0/
-
+      DO I=1,3
+        COLUM(I) = 0.0
+        COLUMN(I) = 0.0
+        XN(I) = 0.0
+        CLNITE(I) = 0.0
+        DO J=1,6
+          OTHPR3(J) = 0.0
+          DO K=1,37
+            PROB(I,J,K) = 0.0
+            XSNPLS(K) = 0.0
+            FNITE(K) = 0.0
+          ENDDO
+        ENDDO
+      ENDDO
       !.. UVFAC(58) is left over from FLIP routines for compatibility
       UVFAC(58)=-1.0 
       IF(ABS((F107-F107SV)/F107).GT.0.005) THEN
@@ -2437,11 +2543,11 @@ C..... table 2
 C
 C....... production of o states from torr et al table 2 (yo array)
 C....... need to reverse order of yo to correspond with lambda
+
       DO 10 L=1,LMAX
       LL=LMAX+1-L
       SUM=YO(LL,1)+YO(LL,2)+YO(LL,3)+YO(LL,4)+YO(LL,5)
       DO 20 I=1,5
-      PROB(1,I,L)=0.0
  20   IF(SUM.NE.0.0) PROB(1,I,L)=YO(LL,I)/SUM
  10    CONTINUE
 C
